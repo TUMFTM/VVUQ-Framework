@@ -12,6 +12,9 @@ function PlotHandle = Plot_SystemVVUQResultsExport_AVM(obj,iResult,resolution,wi
 % Input:    - obj: VVUQSystem object 
 %           - resolution: resolution of the plot to reduce data. Plotting
 %             every i'th point. High number means less accuracy.
+%           - width: width of the figure in cm
+%           - height: height of the figure in cm
+%           - margin: marging of the figure [left bottom right up]
 % ------------
 % Output:   - PlotHandle: all Plot Handles for adaption
 % ------------

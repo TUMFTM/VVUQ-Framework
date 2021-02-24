@@ -48,9 +48,9 @@ classdef VVUQSystem_Main
         end
         PlotHandle=Plot_SystemVVUQResults(obj,iResult,resolution);
         PlotHandle = Plot_SystemVVUQResultsExport_AVM(obj,iResult,resolution,width,height,margin);
-        PlotHandle =Plot_SystemVVUQResultsExport_Calculated_Confidence(obj,iResult,resolution,width,height,margin);
-        PlotHandle =Plot_SystemVVUQResultsExport_Calculated_Measurement_Confidence(obj,iResult,resolution,width,height,margin);
-        PlotHandle =Plot_SystemVVUQResultsExport_Predicted_Confidence(obj,iResult,resolution,width,height,margin);
+        PlotHandle =Plot_SystemVVUQResultsExport_Calculated_Confidence(obj,iResult,resolution,xlimwidth,width,height,margin);
+        PlotHandle =Plot_SystemVVUQResultsExport_Calculated_Measurement_Confidence(obj,iResult,resolution,xlimwidth,width,height,margin);
+        PlotHandle =Plot_SystemVVUQResultsExport_Predicted_Confidence(obj,iResult,resolution,xlimwidth,width,height,margin);
     end   
 end
 

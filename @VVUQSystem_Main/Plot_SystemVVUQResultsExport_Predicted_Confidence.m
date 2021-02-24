@@ -1,4 +1,4 @@
-function PlotHandle = Plot_SystemVVUQResultsExport_Predicted_Confidence(obj,iResult,resolution,width,height,margin)
+function PlotHandle = Plot_SystemVVUQResultsExport_Predicted_Confidence(obj,iResult,resolution,xlimwidth,width,height,margin)
 % Designed by: Beneidkt Danquah (FTM, Technical University of Munich)
 %-------------
 % Created on: 19.03.2020
@@ -12,6 +12,10 @@ function PlotHandle = Plot_SystemVVUQResultsExport_Predicted_Confidence(obj,iRes
 % Input:    - obj: VVUQSystem object 
 %           - resolution: resolution of the plot to reduce data. Plotting
 %             every i'th point. High number means less accuracy.
+%           - xlimwidth: width of the x limits
+%           - width: width of the figure in cm
+%           - height: height of the figure in cm
+%           - margin: marging of the figure [left bottom right up]
 % ------------
 % Output:   - PlotHandle: all Plot Handles for adaption
 % ------------
@@ -140,25 +144,30 @@ obj.ModelFormUC.AVM.Value  =obj.ModelFormUC.AVM.PredictedValue  ;
              
                 
               
-                   %% Draw interval
-                 Interval=0.95;
+                %% Draw interval
+                Interval=0.95;
+                if xlimwidth<=0
                 xlimmin=round((min(obj.ModelFormUC.AVMInputPropPBox.maxCDF{1, 1}(:,1))-obj.ModelFormUC.AVM.PredictedValue-obj.NumericUC.NumericUC.Value)/100-0.5)*100;
                 xlimax=round((max(obj.ModelFormUC.AVMInputPropPBox.minCDF{1, 1}(:,1))+obj.ModelFormUC.AVM.PredictedValue+obj.NumericUC.NumericUC.Value)/100+0.5)*100;
-                 xlim([xlimmin, xlimax]);
-                 xticks(xlimmin:100: xlimax);
+                else
+                xlimmin=round((mean(obj.ModelFormUC.AVMInputPropPBox.maxCDF{1, 1}(:,1))+mean(obj.ModelFormUC.AVMInputPropPBox.minCDF{1, 1}(:,1)))/2/100)*100-xlimwidth/2;
+                xlimax=xlimmin+xlimwidth;
+                end
+                xlim([xlimmin, xlimax]);
+                xticks(xlimmin:100: xlimax);
                 ylim([0, 1])
                 yticks(0:0.2:1)
               
-                 [x,y,b1,b2]=Calculate_IntervalCoordinates(obj,iResult,Interval);
-                 b2=xlimax-25;
-        %%
+                [x,y,b1,b2]=Calculate_IntervalCoordinates(obj,iResult,Interval);
+                b2=xlimax-25;
+        
                 line([x(1) x(1)],[0 y(1)+0.2],'Color',[0 0 0],'LineStyle','-.');
                 line([x(2) x(2)],[0 y(2)],'Color',[0 0 0],'LineStyle','-.');
                 line([x(1) b2],[y(1) y(1)],'Color',[0 0 0],'LineStyle','-');
                 line([x(2) b2],[y(2) y(2)],'Color',[0 0 0],'LineStyle','-');
 
                 
-                
+                %% Legend
                 ha=annotation('textarrow','Interpreter','latex','HeadStyle','vback2','HeadLength',7,'HeadWidth',7,'fontsize',9,'Linewidth',0.5);
                 ha.Parent = gca;           % associate the arrow the the current axes
                 ha.X = [b1 b1];          % the location in data units

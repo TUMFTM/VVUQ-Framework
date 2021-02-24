@@ -192,7 +192,7 @@ function Figurehandles=Plot_InferenceModel(objVUCL,StandardConfig,objVVUQD)
 
         width=9.2;                                                                 %Width of plot in cm
         height=6;                                                                  %Height of plot in cm
-        margin=[0.9 0.7 2.4 0.05];                                                 %Margin left low right up
+        margin=[0.9 0.7 2.4 0.09];                                                 %Margin left low right up
         margin_sub=1.0;                                                            %margin between subplots
         set(fig_temp,'Position',[20 20 width height]);
         fig_temp.CurrentAxes.Units='Centimeters';

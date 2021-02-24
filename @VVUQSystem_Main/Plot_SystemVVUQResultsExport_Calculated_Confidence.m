@@ -1,4 +1,4 @@
-function PlotHandle = Plot_SystemVVUQResultsExport_Calculated_Confidence(obj,iResult,resolution,width,height,margin)
+function PlotHandle = Plot_SystemVVUQResultsExport_Calculated_Confidence(obj,iResult,resolution,xlimwidth,width,height,margin)
 % Designed by: Beneidkt Danquah (FTM, Technical University of Munich)
 %-------------
 % Created on: 19.03.2020
@@ -12,6 +12,10 @@ function PlotHandle = Plot_SystemVVUQResultsExport_Calculated_Confidence(obj,iRe
 % Input:    - obj: VVUQSystem object 
 %           - resolution: resolution of the plot to reduce data. Plotting
 %             every i'th point. High number means less accuracy.
+%           - xlimwidth: width of the x limits
+%           - width: width of the figure in cm
+%           - height: height of the figure in cm
+%           - margin: marging of the figure [left bottom right up]
 % ------------
 % Output:   - PlotHandle: all Plot Handles for adaption
 % ------------
@@ -138,9 +142,13 @@ function PlotHandle = Plot_SystemVVUQResultsExport_Calculated_Confidence(obj,iRe
                             
                 %% Draw interval
                 Interval=0.95;
-
+                if xlimwidth<=0
                 xlimmin=round((min(obj.ModelFormUC.AVMInputPropPBox.maxCDF{1, 1}(:,1))-obj.ModelFormUC.AVM.PredictedValue-obj.NumericUC.NumericUC.Value)/100-0.5)*100;
                 xlimax=round((max(obj.ModelFormUC.AVMInputPropPBox.minCDF{1, 1}(:,1))+obj.ModelFormUC.AVM.PredictedValue+obj.NumericUC.NumericUC.Value)/100+0.5)*100;
+                else
+                xlimmin=round((mean(obj.ModelFormUC.AVMInputPropPBox.maxCDF{1, 1}(:,1))+mean(obj.ModelFormUC.AVMInputPropPBox.minCDF{1, 1}(:,1)))/2/100)*100-xlimwidth/2;
+                xlimax=xlimmin+xlimwidth;
+                end
                 xlim([xlimmin, xlimax]);
                 xticks(xlimmin:100: xlimax);
                 ylim([0, 1])
@@ -148,7 +156,7 @@ function PlotHandle = Plot_SystemVVUQResultsExport_Calculated_Confidence(obj,iRe
               
                 [x,y,b1,b2]=Calculate_IntervalCoordinates(obj,iResult,Interval);
                 b2=xlimax-25;
-        %%
+        
                 line([x(1) x(1)],[0 y(1)+0.2],'Color',[0 0 0],'LineStyle','-.');
                 line([x(2) x(2)],[0 y(2)],'Color',[0 0 0],'LineStyle','-.');
                 line([x(1) b2],[y(1) y(1)],'Color',[0 0 0],'LineStyle','-');
@@ -165,12 +173,8 @@ function PlotHandle = Plot_SystemVVUQResultsExport_Calculated_Confidence(obj,iRe
                 ha.Parent = gca;           % associate the arrow the the current axes
                 ha.X = [b1 b1];          % the location in data units
                 ha.Y = [y(2) y(1)];  
-               
 
-           
-
-
-                
+                %% Legend
                 PlotHandle.Legend=legend([PlotHandle.InputUCPBox PlotHandle.ModelFormUC(1) PlotHandle.NumericUC(1)],{'Model Input UC', 'Model Form UC', 'Numerical UC'},'Position',[0.119603436618642,0.761056567529813,0.369625830305223,0.19118942479205], 'Interpreter', 'latex','FontSize',8);
                 %title(['Gesamtunsicherheit ', Zyklusname])
                 xlabel('$\mathrm{Consumption~y~in~Wh}$', 'Interpreter', 'latex','FontSize',9);

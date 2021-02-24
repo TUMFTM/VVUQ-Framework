@@ -23,9 +23,10 @@ warning('off','MATLAB:print:FigureTooLargeForPage')%turn off warning if figure i
         filepath=[path,'/Results_VVUQ'];
         [~,~]=mkdir (filepath);
         
-        width=5.5;                                                                
-        height=4;                                                                 
-        margin=[0.8 0.75 0.4 0.15];                                              
+        width=6.05;                                                                
+        height=4.4;                                                                 
+        margin=[0.8 0.75 0.4 0.15]; 
+        xlimwidth=600;
         Legendvisibility='off';
         resolution=3;
         
@@ -42,7 +43,7 @@ warning('off','MATLAB:print:FigureTooLargeForPage')%turn off warning if figure i
               
         fCalculated_Small=figure;
         hold on
-        PlotHandlesCalculated_Small(iResult)= Plot_SystemVVUQResultsExport_Calculated_Confidence(VVUQS,iResult,resolution,width,height,margin);
+        PlotHandlesCalculated_Small(iResult)= Plot_SystemVVUQResultsExport_Calculated_Confidence(VVUQS,iResult,resolution,xlimwidth,width,height,margin);
         PlotHandlesCalculated_Small(iResult).Legend.Visible=Legendvisibility;
         print(fCalculated_Small,[filepath,'/','Method - TotalUC-',DomainName,'-',num2str(iSystem),'-',num2str(iResult),'-MeasuredUC'],'-dpdf','-r0','-painters'); %'-dmeta'
         hold off
@@ -50,7 +51,7 @@ warning('off','MATLAB:print:FigureTooLargeForPage')%turn off warning if figure i
         
         fCalculated_Measurement_Small=figure;
         hold on
-        PlotHandlesCalculated_Measurement_Small(iResult)= Plot_SystemVVUQResultsExport_Calculated_Measurement_Confidence(VVUQS,iResult,resolution,width,height,margin);
+        PlotHandlesCalculated_Measurement_Small(iResult)= Plot_SystemVVUQResultsExport_Calculated_Measurement_Confidence(VVUQS,iResult,resolution,xlimwidth,width,height,margin);
         PlotHandlesCalculated_Measurement_Small(iResult).Legend.Visible=Legendvisibility;
         print(fCalculated_Measurement_Small,[filepath,'/','Method - TotalUC-',DomainName,'-',num2str(iSystem),'-',num2str(iResult),'-MeasuredUC_Measurements'],'-dpdf','-r0','-painters'); %'-dmeta'
         hold off
@@ -58,7 +59,7 @@ warning('off','MATLAB:print:FigureTooLargeForPage')%turn off warning if figure i
         
         fPredicted_Small=figure;
         hold on
-        PlotHandlesPredicted_Small(iResult)= Plot_SystemVVUQResultsExport_Predicted_Confidence(VVUQS,iResult,resolution,width,height,margin);
+        PlotHandlesPredicted_Small(iResult)= Plot_SystemVVUQResultsExport_Predicted_Confidence(VVUQS,iResult,resolution,xlimwidth,width,height,margin);
         PlotHandlesPredicted_Small(iResult).Legend.Visible=Legendvisibility;
         print(fPredicted_Small,[filepath,'/','Method - TotalUC-',DomainName,'-',num2str(iSystem),'-',num2str(iResult),'-PedictedUC_SmallFigure'],'-dpdf','-r0','-painters'); %'-dmeta'
         hold off
@@ -66,7 +67,7 @@ warning('off','MATLAB:print:FigureTooLargeForPage')%turn off warning if figure i
         
         fPredicted=figure;
         hold on
-        PlotHandlesPredicted(iResult)= Plot_SystemVVUQResultsExport_Predicted_Confidence(VVUQS,iResult,resolution,9.2,6,[1.0 0.9 0.3 0.15]);
+        PlotHandlesPredicted(iResult)= Plot_SystemVVUQResultsExport_Predicted_Confidence(VVUQS,iResult,resolution,xlimwidth,9.2,6,[1.0 0.9 0.3 0.15]);
         print(fPredicted,[filepath,'/','Method - TotalUC-',DomainName,'-',num2str(iSystem),'-',num2str(iResult),'-PedictedUC'],'-dpdf','-r0','-painters'); %'-dmeta'
         hold off
         
