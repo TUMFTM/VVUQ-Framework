@@ -3,7 +3,7 @@ function objVVUQVD=Init_VVUQDomain(objVVUQVD,objVVUQ)
 %-------------
 % Created on: 05.10.2020
 % ------------
-% Version: Matlab2019b
+% Version: Matlab2020b
 %-------------
 % Description: Initializes each configuraiton of domain with the table data
 % creating a statistical verification validation and uncertainty
@@ -29,11 +29,20 @@ nParameters=    objVVUQ.nAlternatingRegressors+objVVUQ.nDependentRegressors+objV
                 nAleatoric=nAleatoric+1;
             end  
         end
-        SystemName=objVVUQVD.UC_LearningDoE.ModelProperty{iUCLDoEConfig}.SystemName  ;
-        CallerName=objVVUQVD.UC_LearningDoE.ModelProperty{iUCLDoEConfig}.CallerName  ;
+        SystemName=objVVUQVD.UC_LearningDoE.ModelProperty{iUCLDoEConfig}.SystemName;
+        CallerName=objVVUQVD.UC_LearningDoE.ModelProperty{iUCLDoEConfig}.CallerName;
+        ResultProperty=objVVUQVD.UC_LearningDoE.ResultProperty{iUCLDoEConfig};
              
-        VVUQS=VVUQSystem_Main(SystemName,CallerName,nEpistemic,nAleatoric);
+        VVUQS=VVUQSystem_Main(SystemName,CallerName,nEpistemic,nAleatoric,objVVUQ.Dependencies);
+        try %load Sampletime if defined
+            VVUQS.SystemConf.SampleTime=objVVUQVD.UC_LearningDoE.Config_Info{iUCLDoEConfig}.SampleTime;
+            VVUQS.SystemConf.StopTime=objVVUQVD.UC_LearningDoE.Config_Info{iUCLDoEConfig}.StopTime;
+            VVUQS.NumericUC=NumericUC_Main(VVUQS.SystemConf);  
+        catch
+        end
+        VVUQS.SystemConf.ResultProperties=ResultProperty;
         VVUQS.InputPropagationUC=InputPropagationUC_Main(VVUQS.SystemConf,objVVUQVD.nDefaultEpistemicSamples,objVVUQVD.nDefaultAleatoricSamples);
+        
         
         iVVUQSEpistemicParameter=1;
         for iParameter=1+nInfo:nParameters+nInfo

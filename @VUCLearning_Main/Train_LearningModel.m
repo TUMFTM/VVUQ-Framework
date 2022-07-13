@@ -5,53 +5,65 @@ function objVUCL=Train_LearningModel(objVUCL)
 % ------------
 % Version: Matlab2020b
 %-------------
-% Description: Trains the uncertainty learning model with the loaded points 
-% using multidimesnional linear regression and applying an additional 
-% prediction confidence intervall. 
+% Description: Trains the uncertainty learning model with the loaded points
+% using multidimesnional linear regression and applying an additional
+% prediction confidence intervall.
 % ------------
 % Input:    - objVUCL: Validation uncertainty learnin object
 % ------------
 % Output:   - objVUCL: Trained validation uncertainty learnin object.
 % ------------
+iRegressantResults=1;
+InferenceModel=Create_InferenceModel(objVUCL.InferenceProperties);
+[PredictionInterval] = Calc_PredictionInterval(objVUCL.X_lea.Value, objVUCL.Y_lea(iRegressantResults).Value, InferenceModel.x_vector, objVUCL.InferenceProperties.Confidence, objVUCL.InferenceProperties.Distribution, objVUCL.InferenceProperties.k);
+objVUCL.InferenceModel=Load_PredictionIntervalinInferenceModel(InferenceModel,PredictionInterval);
 
-  
+InferenceModelLeft=Create_InferenceModel(objVUCL.InferenceProperties);
+[PredictionIntervalLeft] = Calc_PredictionInterval(objVUCL.X_lea.Value, objVUCL.Y_lea(iRegressantResults).ValueLeft, InferenceModelLeft.x_vector, objVUCL.InferenceProperties.Confidence, objVUCL.InferenceProperties.Distribution, objVUCL.InferenceProperties.k);
+objVUCL.InferenceModelLeft=Load_PredictionIntervalinInferenceModel(InferenceModelLeft,PredictionIntervalLeft);
+
+InferenceModelRight=Create_InferenceModel(objVUCL.InferenceProperties);
+[PredictionIntervalRight] = Calc_PredictionInterval(objVUCL.X_lea.Value, objVUCL.Y_lea(iRegressantResults).ValueRight, InferenceModelRight.x_vector, objVUCL.InferenceProperties.Confidence, objVUCL.InferenceProperties.Distribution, objVUCL.InferenceProperties.k);
+objVUCL.InferenceModelRight=Load_PredictionIntervalinInferenceModel(InferenceModelRight,PredictionIntervalRight);
+
+for iRegressantResults=2:1:objVUCL.regressantDescription(1).nResult
     InferenceModel=Create_InferenceModel(objVUCL.InferenceProperties);
-    [PredictionInterval] = Calc_PredictionInterval(objVUCL.X_lea.Value, objVUCL.Y_lea.Value, InferenceModel.x_pred, objVUCL.InferenceProperties.Confidence, objVUCL.InferenceProperties.Distribution, objVUCL.InferenceProperties.k);
-    objVUCL.InferenceModel=Load_PredictionIntervalinInferenceModel(InferenceModel,PredictionInterval);
+    [PredictionInterval] = Calc_PredictionInterval(objVUCL.X_lea.Value, objVUCL.Y_lea(iRegressantResults).Value, InferenceModel.x_vector, objVUCL.InferenceProperties.Confidence, objVUCL.InferenceProperties.Distribution, objVUCL.InferenceProperties.k);
+    objVUCL.InferenceModel(iRegressantResults)=Load_PredictionIntervalinInferenceModel(InferenceModel,PredictionInterval);
     
     InferenceModelLeft=Create_InferenceModel(objVUCL.InferenceProperties);
-    [PredictionIntervalLeft] = Calc_PredictionInterval(objVUCL.X_lea.Value, objVUCL.Y_lea.ValueLeft, InferenceModelLeft.x_pred, objVUCL.InferenceProperties.Confidence, objVUCL.InferenceProperties.Distribution, objVUCL.InferenceProperties.k);
-    objVUCL.InferenceModelLeft=Load_PredictionIntervalinInferenceModel(InferenceModelLeft,PredictionIntervalLeft);
-
-    InferenceModelRight=Create_InferenceModel(objVUCL.InferenceProperties);
-    [PredictionIntervalRight] = Calc_PredictionInterval(objVUCL.X_lea.Value, objVUCL.Y_lea.ValueRight, InferenceModelRight.x_pred, objVUCL.InferenceProperties.Confidence, objVUCL.InferenceProperties.Distribution, objVUCL.InferenceProperties.k);
-    objVUCL.InferenceModelRight=Load_PredictionIntervalinInferenceModel(InferenceModelRight,PredictionIntervalRight);
+    [PredictionIntervalLeft] = Calc_PredictionInterval(objVUCL.X_lea.Value, objVUCL.Y_lea(iRegressantResults).ValueLeft, InferenceModelLeft.x_vector, objVUCL.InferenceProperties.Confidence, objVUCL.InferenceProperties.Distribution, objVUCL.InferenceProperties.k);
+    objVUCL.InferenceModelLeft(iRegressantResults)=Load_PredictionIntervalinInferenceModel(InferenceModelLeft,PredictionIntervalLeft);
     
+    InferenceModelRight=Create_InferenceModel(objVUCL.InferenceProperties);
+    [PredictionIntervalRight] = Calc_PredictionInterval(objVUCL.X_lea.Value, objVUCL.Y_lea(iRegressantResults).ValueRight, InferenceModelRight.x_vector, objVUCL.InferenceProperties.Confidence, objVUCL.InferenceProperties.Distribution, objVUCL.InferenceProperties.k);
+    objVUCL.InferenceModelRight(iRegressantResults)=Load_PredictionIntervalinInferenceModel(InferenceModelRight,PredictionIntervalRight);
+end
 end
 
 
 
 function InferenceModel=Create_InferenceModel(InferenceProperties)
 
-    nRegressorDim=length(InferenceProperties.Resolutions);
+nRegressorDim=length(InferenceProperties.Resolutions);
 
-    for iRegressorDim=1:nRegressorDim
-        InferenceModel.x_mesh(iRegressorDim).Vector= InferenceProperties.min(iRegressorDim):(InferenceProperties.max(iRegressorDim)-InferenceProperties.min(iRegressorDim))/(InferenceProperties.Resolutions(iRegressorDim)-1):InferenceProperties.max(iRegressorDim);
-    end
-
-    [InferenceModel.x_mesh.Mesh] = meshgrid(InferenceModel.x_mesh.Vector);
-
-    for iRegressorDim=1:nRegressorDim
-        InferenceModel.x_mesh(iRegressorDim).MeshVector= InferenceModel.x_mesh(iRegressorDim).Mesh(:);
-    end
-
-    InferenceModel.x_pred=[];
-    for iRegressorDim=1:nRegressorDim
-        InferenceModel.x_pred=[InferenceModel.x_pred, InferenceModel.x_mesh(iRegressorDim).MeshVector];
-    end
-    
+for iRegressorDim=1:nRegressorDim
+    InferenceModel.x_mesh(iRegressorDim).Vector= InferenceProperties.min(iRegressorDim):(InferenceProperties.max(iRegressorDim)-InferenceProperties.min(iRegressorDim))/(InferenceProperties.Resolutions(iRegressorDim)-1):InferenceProperties.max(iRegressorDim);
 end
-    
+
+[InferenceModel.x_mesh.Mesh] = meshgrid(InferenceModel.x_mesh.Vector);
+
+for iRegressorDim=1:nRegressorDim
+    InferenceModel.x_mesh(iRegressorDim).MeshVector= InferenceModel.x_mesh(iRegressorDim).Mesh(:);
+end
+
+InferenceModel.x_vector=[];
+for iRegressorDim=1:nRegressorDim
+    InferenceModel.x_vector=[InferenceModel.x_vector, InferenceModel.x_mesh(iRegressorDim).MeshVector];
+end
+
+end
+
 
 
 function PredictionInterval = Calc_PredictionInterval(X, Y, x, Confidence, Distribution, k)
@@ -64,10 +76,11 @@ function PredictionInterval = Calc_PredictionInterval(X, Y, x, Confidence, Distr
 %-------------
 % Description: n-dimensional prediction interval
 % ------------
-% Input:    - X: matrix with n rows and x+1 columns (x = Vector of measured Values) 
+% Input:    - X: matrix with n rows and x+1 columns (x = Vector of measured Values)
 %           - Y: vector with n rows (Uncertainty Measurements from Simulation)
 %           - x: predictors each row forms a predictor variable set
 %           - Confidence: Factor for Confidence
+%           - Distribution: Type of uncertainty distribution ('Fisher' or 'Students_t')
 %           - k: Number of simultaneous prediction values
 % ------------
 % Output:   - OutputFunction: Regression-Function
@@ -113,12 +126,13 @@ s=sqrt((Y'*Y-Y'*X*beta)/(n-p));% Variance
 
 
 RegPoint=x_hat*beta;
-Confidence=Dist*s*sqrt(I_hat+dot(x_hat,((X'*X)\x_hat')',2));
-PredictionIntervalUp=RegPoint+Confidence;
-PredictionIntervalLow=RegPoint-Confidence;
-PredictionInterval.Mean=RegPoint';
+RegPoint(0>RegPoint)=0; %Model uncertainty cannot be negative
+ConfidenceValue=Dist*s*sqrt(I_hat+dot(x_hat,((X'*X)\x_hat')',2));
+PredictionIntervalUp=RegPoint+ConfidenceValue;
+PredictionIntervalLow=RegPoint-ConfidenceValue;
+PredictionInterval.Mean=RegPoint;
 PredictionInterval.UpperPI = PredictionIntervalUp;
-PredictionInterval.LowerPI = PredictionIntervalLow';
+PredictionInterval.LowerPI = PredictionIntervalLow;
 
 end
 
@@ -126,13 +140,21 @@ end
 
 function InferenceModel=Load_PredictionIntervalinInferenceModel(InferenceModel,PredictionInterval)
 
-    InferenceModel.Y_pred=PredictionInterval.UpperPI;
-    F=scatteredInterpolant(InferenceModel.x_mesh.MeshVector,InferenceModel.Y_pred);
-    
-    UCExtrap_mesh=F(InferenceModel.x_mesh.Mesh);
-    InferenceModel.y_mesh.Mesh=UCExtrap_mesh;
-    InferenceModel.y_mesh.MeshVector=UCExtrap_mesh(:);
-    InferenceModel.ScatteredInterpolant=F;
+
+F_pred=scatteredInterpolant(InferenceModel.x_mesh.MeshVector,PredictionInterval.UpperPI);
+
+UCExtrap_mesh=F_pred(InferenceModel.x_mesh.Mesh);
+InferenceModel.y_PredMesh.Mesh=UCExtrap_mesh;
+InferenceModel.y_PredMesh.MeshVector=UCExtrap_mesh(:);
+InferenceModel.y_PredVector=PredictionInterval.UpperPI;
 
 
+F_mean=scatteredInterpolant(InferenceModel.x_mesh.MeshVector,PredictionInterval.Mean);
+
+UCExtrap_mesh=F_mean(InferenceModel.x_mesh.Mesh);
+InferenceModel.y_MeanMesh.Mesh=UCExtrap_mesh;
+InferenceModel.y_MeanMesh.MeshVector=UCExtrap_mesh(:);
+InferenceModel.y_MeanVector=PredictionInterval.Mean;
+InferenceModel.ScatteredInterpolant_pred=F_pred;
+InferenceModel.ScatteredInterpolant_mean=F_mean;
 end

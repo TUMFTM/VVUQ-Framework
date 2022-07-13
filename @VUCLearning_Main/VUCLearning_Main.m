@@ -24,6 +24,7 @@ classdef VUCLearning_Main
     
     properties (Access=public )
         regressorDescription;
+        regressantDescription
         x_lea;
         X_lea;
         Y_lea;
@@ -36,18 +37,18 @@ classdef VUCLearning_Main
     methods     
         function objVUCL=VUCLearning_Main(objVVUQ,Resolutions, MinValues, MaxValues,Confidence)
             objVUCL.regressorDescription=get_regressorDescriptions(objVVUQ);
+            objVUCL.regressantDescription=objVVUQ.DefaultResultProperties;
             objVUCL.InferenceProperties.Resolutions=Resolutions;
             objVUCL.InferenceProperties.min=MinValues;
             objVUCL.InferenceProperties.max=MaxValues;
             objVUCL.InferenceProperties.Confidence=Confidence;
             objVUCL.InferenceProperties.Distribution='Fisher';      %Used distribution 'Fisher' or 'Students_t'
             objVUCL.InferenceProperties.k=1;                        %number of simultaneous predictions
-
         end
         objVUCL=Load_LearningData(objVUCL,x_lea,Y_lea);
         objVUCL=Load_LearningDataFromDomain(objVUCL,objVVUQD,LearningPoints);
         objVUCL=Train_LearningModel(objVUCL);
-        Figurehandles=Plot_InferenceModel(objVUCL,StandardConfig,objVVUQD);
+        Figurehandles=Plot_InferenceModel(objVUCL,StandardConfig,objVVUQD,DomainName,PlotContent);
     end   
 end
 

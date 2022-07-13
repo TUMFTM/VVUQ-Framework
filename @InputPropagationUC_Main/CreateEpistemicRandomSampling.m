@@ -24,7 +24,7 @@ function objMCM=CreateEpistemicRandomSampling(objMCM,objSysC,nEpistemicSamples)
             objMCM.ResultProperties=objSysC.ResultProperties;
             objMCM.EpistemicUCSamples=objSysC.UCParameters.EpistemicUCs;   
             nEpistemicUCs=objSysC.UCParameters.nEpistemicUCs;
-            EpistemicNormalisedSamples =  Create_AleatoricSamplesfromHypercubes('sobol',objSysC.UCParameters.nEpistemicUCs,objMCM.nEpistemicSamples);
+            EpistemicNormalisedSamples =  Create_SamplesInHypercube('sobol',objSysC.UCParameters.nEpistemicUCs,objMCM.nEpistemicSamples);
 
             for iEpistemicUC=1:nEpistemicUCs
                 objMCM.EpistemicUCSamples(iEpistemicUC).Samples=icdf(objMCM.EpistemicUCSamples(iEpistemicUC).Distribution,EpistemicNormalisedSamples(:,iEpistemicUC));           
@@ -42,7 +42,7 @@ function objMCM=CreateEpistemicRandomSampling(objMCM,objSysC,nEpistemicSamples)
 end
 
 
-function EpistemicNormalisedSamples = Create_AleatoricSamplesfromHypercubes(Method,nEpistemicUCs,nEpistemicSamples)
+function SamplesInHypercube = Create_SamplesInHypercube(Method,nEpistemicUCs,nEpistemicSamples)
 % Designed by: Beneidkt Danquah (FTM, Technical University of Munich)
 %-------------
 % Created on: 29.01.2021
@@ -60,9 +60,16 @@ function EpistemicNormalisedSamples = Create_AleatoricSamplesfromHypercubes(Meth
 % ------------ 
 if strcmp('sobol',Method)
         Sobolset=sobolset(nEpistemicUCs,'Skip',1e3,'Leap',1e2);
-        EpistemicNormalisedSamples=Sobolset(1:nEpistemicSamples,:);
+        SamplesInHypercube=Sobolset(1:nEpistemicSamples,:);
 elseif strcmp('random',Method)    
-            EpistemicNormalisedSamples=rand(nEpistemicSamples,nEpistemicUCs);     
+        SamplesInHypercube=rand(nEpistemicSamples,nEpistemicUCs);
+elseif strcmp('FullFactorial',Method)    
+        factor=ceil(nthroot(nEpistemicSamples,nEpistemicUCs));
+        factors=ones(1,nEpistemicUCs)*factor;
+        fulfactDoE=fullfact(factors);
+        fulfactDoE=(fulfactDoE-1)/(factor-1);
+        myrandperm=randperm(size(fulfactDoE,1));
+        SamplesInHypercube=fulfactDoE(myrandperm(1:nEpistemicSamples),:);
 end
        
 end

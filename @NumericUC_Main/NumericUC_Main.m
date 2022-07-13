@@ -41,7 +41,7 @@ classdef NumericUC_Main
         function objNum=NumericUC_Main(objSysC)
             objNum.BaseSampletime=objSysC.SampleTime;
             objNum.RoundingUC=0;
-            objNum.DiscretizationUC.SampleTimes=[objNum.BaseSampletime,objNum.BaseSampletime/10,objNum.BaseSampletime/100];
+            objNum.DiscretizationUC.SampleTimes=[objNum.BaseSampletime,objNum.BaseSampletime/2,objNum.BaseSampletime/4];
         end
         objNumUC= Calc_NumericUC(objNumUC,objSys)
         handle=Plot_NumericUC(objNumUc,objMCM,ObjAVM,iResult,resolution)

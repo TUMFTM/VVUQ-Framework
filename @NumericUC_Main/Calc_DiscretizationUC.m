@@ -15,22 +15,22 @@ function objNum= Calc_DiscretizationUC(objNum,objSysC)
 %               objNumUC.Discretization
 
     nInResolutions=3; 
-    objNum.BaseSampletime=objSysC.SampleTime;
-    SampleTime=[objNum.BaseSampletime,objNum.BaseSampletime/5,objNum.BaseSampletime/25];  
+    %objNum.BaseSampletime=objSysC.SampleTime;
+    %SampleTime=[objNum.BaseSampletime,objNum.BaseSampletime/2,objNum.BaseSampletime/4];  
+    SampleTime=objNum.DiscretizationUC.SampleTimes;
     SystemCallTable=objSysC.UCParameters.BaseParamSet;
     for iResolution=1:nInResolutions
         SystemCallTable(iResolution,:)=objSysC.UCParameters.BaseParamSet;
         SystemCallTable(iResolution,1).Variables={SampleTime(1,iResolution)};
     end
-    VariableTypesResultTable=cell(1,objSysC.ResultProperties.nResult);
+    VariableTypesResultTable=cell(1,objSysC.ResultProperties(1).nResult);
     VariableTypesResultTable(:)={'cell'};
-    DefaultResultTable=table('Size',[nInResolutions,objSysC.ResultProperties.nResult],'VariableTypes',VariableTypesResultTable,'VariableNames',objSysC.ResultProperties.Names );
+    DefaultResultTable=table('Size',[nInResolutions,objSysC.ResultProperties(1).nResult],'VariableTypes',VariableTypesResultTable,'VariableNames',[objSysC.ResultProperties.Names] );
 
-    %eval(objSysC.CallFunction);
     CallFunction=str2func(objSysC.CallFunction);
     SystemEvaluation=CallFunction(SystemCallTable,DefaultResultTable);
-    
-    nResult=objSysC.ResultProperties.nResult;
+    Simulink.sdi.clear;
+    nResult=objSysC.ResultProperties(1).nResult;
     for iResult=1:nResult
             switch class(SystemEvaluation{1,iResult}{1})
                 case 'timeseries'                    
@@ -47,7 +47,7 @@ function objNum= Calc_DiscretizationUC(objNum,objSysC)
                     objNum.DiscretizationUC(iResult).SampleTimes=SampleTime;
                     OutExact=Calc_ExactSolution(SampleTime(1), SampleTime(2), SampleTime(3), SystemEvaluation{1,iResult}{1}, SystemEvaluation{2,iResult}{1}, SystemEvaluation{3,iResult}{1});
                     FactorOfSafety=3;   %Oberkampf S.326
-                    discretization_error=abs(SystemEvaluation{1,1}{1}-OutExact);
+                    discretization_error=abs(SystemEvaluation{1,iResult}{1}-OutExact);
                     objNum.DiscretizationUC(iResult).Value=FactorOfSafety*discretization_error; % Numerical uncertainty estimation of SampleTime LowRes
             end
      end

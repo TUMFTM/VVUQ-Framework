@@ -40,10 +40,12 @@ for iARegressor=1:nARegressors
     objVUCL.X_lea.Value = [objVUCL.X_lea.Value objVUCL.x_lea(iARegressor).Value];
 end
 
-for  iConfig=1:nConfigs
-    objVUCL.Y_lea.Value(iConfig,1)=DoEValidation.VVUQS{iConfig}.ModelFormUC.AVM.Value;
-    objVUCL.Y_lea.ValueLeft(iConfig,1)=DoEValidation.VVUQS{iConfig}.ModelFormUC.AVM.ValueLeft;
-    objVUCL.Y_lea.ValueRight(iConfig,1)=DoEValidation.VVUQS{iConfig}.ModelFormUC.AVM.ValueRight;
+for iRegressantResults=1:1:objVUCL.regressantDescription(1).nResult
+    for  iConfig=1:nConfigs
+        objVUCL.Y_lea(iRegressantResults).Value(iConfig,1)=DoEValidation.VVUQS{iConfig}.ModelFormUC.AVM(iRegressantResults).Value;
+        objVUCL.Y_lea(iRegressantResults).ValueLeft(iConfig,1)=DoEValidation.VVUQS{iConfig}.ModelFormUC.AVM(iRegressantResults).ValueLeft;
+        objVUCL.Y_lea(iRegressantResults).ValueRight(iConfig,1)=DoEValidation.VVUQS{iConfig}.ModelFormUC.AVM(iRegressantResults).ValueRight;
+    end
 end
 
 end

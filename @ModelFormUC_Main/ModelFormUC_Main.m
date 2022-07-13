@@ -35,7 +35,7 @@ classdef ModelFormUC_Main
         end
         objMF=Execute_AreaValidationMetric(objMF,Measurements, UCInputPropPBoxfromMCM)
         handle=Plot_ModelFormUC(objMF, objInPropUC,iResult,resolution)
-        handle=Plot_MeasurementCDF(objMF,objMCM,iResult,resolution)
+        handle=Plot_MeasurementCDF(objMF,objMCM,iResult,resolution,LineWidth,Color)
     end
     
     methods (Static)

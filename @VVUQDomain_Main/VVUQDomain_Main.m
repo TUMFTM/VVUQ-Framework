@@ -16,9 +16,9 @@ classdef VVUQDomain_Main
 % Input:    - objVVUQ: VVUQ Framework object
 %           - nUCLDoEConfigs: Number of parameter configurations for uncertainty learning (number of VVUQ Systems, rows in the table) 
 %           - nDefaultEpistemicSamples: Default number of epistemic samples
-%             for each parameter configuration.
+%             for each parameter configuration. Must be >=1.
 %           - nAleatoricSamples: Default number of aleatoric samples
-%             for each parameter configuration.
+%             for each parameter configuration. Must be >=1.
 % ------------
 % Output:   - objVVUQD: A defined VVUQ domain containing data for multiple
 %             uncertain systems.
@@ -45,6 +45,7 @@ classdef VVUQDomain_Main
         objVVUQD=Propagate_VVUQDomain(objVVUQD);
         objVVUQVD=Calc_AVMValidationDomain(objVVUQVD);
         objVVUQVD=Predict_AVMApplicationDomain(objVVUQAD, objVVUQ);
+        objVVUQVD = Calc_TotalPBoxes(objVVUQVD);
     end   
 end
 

@@ -35,7 +35,7 @@ function objMCM=DesignDoE(objMCM)
 
 
     nResults=objMCM.ResultProperties.nResult;
-    ResultCellNames=objMCM.ResultProperties.Names;
+    ResultCellNames=[objMCM.ResultProperties(:).Names];
     ResultUnits=cell(1,nResults);
     ResultUnits(:)={'DefaultSIunitResult'};
 

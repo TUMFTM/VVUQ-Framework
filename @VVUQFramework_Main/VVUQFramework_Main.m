@@ -34,6 +34,7 @@ classdef VVUQFramework_Main
         nAlternatingRegressors;
         nDependentRegressors;
         nFixedRegressors;
+        Dependencies;
         DefaultResultProperties;    
         VVUQValidationDomain;
         VUCLearning;
@@ -41,17 +42,25 @@ classdef VVUQFramework_Main
     end
    
     methods     
-        function objVVUQ=VVUQFramework_Main(SystemName, CallerName, nRegressors)
+        function objVVUQ=VVUQFramework_Main(SystemName, CallerName, nRegressors, Dependencies)
             objVVUQ.DefaultSystemName=SystemName;
             objVVUQ.DefaultCallerName=CallerName;
             objVVUQ.nAlternatingRegressors=nRegressors(1);
             objVVUQ.nDependentRegressors=nRegressors(2);
             objVVUQ.nFixedRegressors=nRegressors(3);
+            if exist('Dependencies','var')
+                objVVUQ.Dependencies=Dependencies;
+                objVVUQ.Dependencies.nDepEpistemic=size(Dependencies.DepEpistemic,1);
+                objVVUQ.Dependencies.nDepAleatoric=size(Dependencies.DepAleatoric,1);
+            else
+                objVVUQ.Dependencies=struct('nDepEpistemic',0,'DepEpistemic',[],'nDepAleatoric',0,'DepAleatoric',[]);
+            end
             objVVUQ.nSystemInfoCollumns=1;
             objVVUQ.DefaultResultProperties.nResult=1;
             objVVUQ.DefaultResultProperties.Names={'Result'};
             objVVUQ.DefaultResultProperties.Types={'double'};
-            objVVUQ.DefaultResultProperties.Units={'DefaultSIunitResult'} ; 
+            objVVUQ.DefaultResultProperties.Units={'DefaultSIunitResult'}; 
+            objVVUQ.DefaultResultProperties.Descriptions={'DefaultDescription'};
             objVVUQ.VVUQValidationDomain=VVUQDomain_Main(objVVUQ, 2,  3,50);
             objVVUQ.VUCLearning=VUCLearning_Main(objVVUQ,ones(1,objVVUQ.nAlternatingRegressors)*10, zeros(1,objVVUQ.nAlternatingRegressors), ones(1,objVVUQ.nAlternatingRegressors),0.95);
             objVVUQ.VVUQApplicationDomain=VVUQDomain_Main(objVVUQ, 2,  3,50);

@@ -1,4 +1,4 @@
-function handle=Plot_MeasurementCDF(objMF,objMCM,iResult,resolution)
+function handle=Plot_MeasurementCDF(objMF,objMCM,iResult,resolution,LineWidth,Color)
 % Designed by: Beneidkt Danquah (FTM, Technical University of Munich)
 %-------------
 % Created on: 19.03.2020
@@ -21,6 +21,6 @@ function handle=Plot_MeasurementCDF(objMF,objMCM,iResult,resolution)
                 CDFs1=objMF.MeasurementCDF(iResult).CDFLowRes;              
                 handle(1)=Plot_CDFPlane3D(CDFs1,CorrespondingVector);
             case 'double'
-                handle=plot(objMF.MeasurementCDF(iResult).CDF{1}(1:resolution:end,1),objMF.MeasurementCDF(iResult).CDF{1}(1:resolution:end,2));
+                handle=plot(objMF.MeasurementCDF(iResult).CDF{1}(1:resolution:end,1),objMF.MeasurementCDF(iResult).CDF{1}(1:resolution:end,2),'LineWidth',LineWidth,'Color',Color);
      end
 end

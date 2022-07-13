@@ -15,5 +15,7 @@
 *.pdf -crlf -diff -merge
 *.jpg -crlf -diff -merge
 *.png -crlf -diff -merge
-*_Run_VVUQ_Framework.mat filter=lfs diff=lfs merge=lfs -text
 *MeasurementTable.mat filter=lfs diff=lfs merge=lfs -text
+*_Run_VVUQ_Framework.mat filter=lfs diff=lfs merge=lfs -text
+*Result_2021-* filter=lfs diff=lfs merge=lfs -text
++Sys_Tesla_statKreisfahrt/Data/ZSM_TeslaModelS_Parameter.mat filter=lfs diff=lfs merge=lfs -text

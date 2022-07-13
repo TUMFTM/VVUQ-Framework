@@ -24,13 +24,12 @@ function objMCM=ExecuteDoE(objMCM,objSysC)
     
    SampleTime=objSysC.SampleTime;    
    StopTime=objSysC.StopTime;
-   ResultCollNums=size(objMCM.EpistemicUCSamples,2)+size(objMCM.AleatoricUCSamples,2)+1:size(objMCM.EpistemicUCSamples,2)+size(objMCM.AleatoricUCSamples,2)+objMCM.ResultProperties.nResult ;
+   ResultCollNums=size(objMCM.EpistemicUCSamples,2)+size(objMCM.AleatoricUCSamples,2)+1:size(objMCM.EpistemicUCSamples,2)+size(objMCM.AleatoricUCSamples,2)+objMCM.ResultProperties(1).nResult ;
     for iEpistemicSample=1:objMCM.nEpistemicSamples
         [SystemCallTable,DefaultResultTable]=Create_SystemCallInputTables(SampleTime,StopTime,objMCM,iEpistemicSample);
-        %eval(objSysC.CallFunction);
         CallFunction=str2func(objSysC.CallFunction);
         SystemEvaluation=CallFunction(SystemCallTable,DefaultResultTable);
-        for iResult=1:objMCM.ResultProperties.nResult
+        for iResult=1:objMCM.ResultProperties(1).nResult
             objMCM.MonteCarloDoE{iEpistemicSample,ResultCollNums(iResult)}={(SystemEvaluation{:,iResult})'};
         end
         Simulink.sdi.clear;
@@ -110,10 +109,11 @@ StopTimeTable.Variables=StopTimeCell;
 
 SystemCallInputTable=[SampleTimeTable,StopTimeTable,VariablesTable];
 
-VariableTypesResultTable=cell(1,objMCM.ResultProperties.nResult);
+VariableTypesResultTable=cell(1,objMCM.ResultProperties(1).nResult);
 VariableTypesResultTable(:)={'cell'};
-DefaultResultTable=table('Size',[nSamples,objMCM.ResultProperties.nResult],'VariableTypes',VariableTypesResultTable,'VariableNames',objMCM.ResultProperties.Names );
-
+DefaultResultTable=table('Size',[nSamples,objMCM.ResultProperties(1).nResult],'VariableTypes',VariableTypesResultTable,'VariableNames',[objMCM.ResultProperties.Names] );
+DefaultResultTable.Properties.VariableUnits=[objMCM.ResultProperties.Units]  ;
+DefaultResultTable.Properties.VariableDescriptions(:)={'Default Description'};
 end
 
 

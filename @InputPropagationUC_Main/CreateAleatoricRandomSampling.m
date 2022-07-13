@@ -29,7 +29,10 @@ function objMCM=CreateAleatoricRandomSampling(objMCM,objSysC,nAleatoricSamples)
             objMCM.AleatoricUCSamples=objSysC.UCParameters.AleatoricUCs;         
             nAleatoricUCs=objSysC.UCParameters.nAleatoricUCs;
             
-            AleattoricNormalisedSamples =  Create_AleatoricSamplesfromHypercubes('sobol',objMCM.nEpistemicSamples,objSysC.UCParameters.nAleatoricUCs,objMCM.nAleatoricSamples);
+            AleattoricNormalisedSamples =  Create_SamplesInHypercube('sobol',objMCM.nEpistemicSamples,objSysC.UCParameters.nAleatoricUCs,objMCM.nAleatoricSamples);
+            for iDependency=1:1:objSysC.Dependencies.nDepAleatoric          
+                AleattoricNormalisedSamples{objSysC.Dependencies.DepAleatoric(iDependency,2)}=AleattoricNormalisedSamples{objSysC.Dependencies.DepAleatoric(iDependency,1)};
+            end
             for iAleatoricUC=1:nAleatoricUCs
                 objMCM.AleatoricUCSamples(iAleatoricUC).Samples=icdf(objMCM.AleatoricUCSamples(iAleatoricUC).Distribution,AleattoricNormalisedSamples{iAleatoricUC});
                 %objMCM.AleatoricUCSamples(iAleatoricUC).Samples=icdf(objMCM.AleatoricUCSamples(iAleatoricUC).Distribution,rand(objMCM.nEpistemicSamples,objMCM.nAleatoricSamples));
@@ -46,7 +49,7 @@ function objMCM=CreateAleatoricRandomSampling(objMCM,objSysC,nAleatoricSamples)
 end
 
 
-function AleattoricNormalisedSamples = Create_AleatoricSamplesfromHypercubes(Method,nEpistemicSamples,nAleatoricUCs,nAleatoricSamples)
+function AleattoricNormalisedSamples = Create_SamplesInHypercube(Method,nEpistemicSamples,nAleatoricUCs,nAleatoricSamples)
 % Designed by: Beneidkt Danquah (FTM, Technical University of Munich)
 %-------------
 % Created on: 29.01.2021

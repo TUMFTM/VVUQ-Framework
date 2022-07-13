@@ -19,10 +19,10 @@ function handle=Plot_InputUCMoneCarloCDFs(objMCM,iResult,resolution)
         case 'timeseries'
             handle=[];
         case 'double'
-            CDFCollNum=size(objMCM.EpistemicUCSamples,2)+size(objMCM.AleatoricUCSamples,2)+objMCM.ResultProperties.nResult+iResult;
+            CDFCollNum=size(objMCM.EpistemicUCSamples,2)+size(objMCM.AleatoricUCSamples,2)+objMCM.ResultProperties(iResult).nResult+iResult;
             for iRowTable=1:size(objMCM.MonteCarloDoE(:,CDFCollNum),1)   
                   CDF = objMCM.MonteCarloDoE{iRowTable,CDFCollNum}{1}{1};
-                  handle(iRowTable)=stairs(CDF(1:resolution:end,1),CDF(1:resolution:end,2));
+                  handle(iRowTable)=stairs(CDF(1:resolution:end,1),CDF(1:resolution:end,2),'LineWidth',1);
             end
     end
 end

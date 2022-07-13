@@ -26,10 +26,11 @@ classdef SystemConfig_Main
         StopTime
         UCParameters
         ResultProperties
+        Dependencies
     end
     
     methods
-        function objSysC = SystemConfig_Main(SystemName,FunctionName,nEpistemicUCs,nAleatoricUCs)
+        function objSysC = SystemConfig_Main(SystemName,FunctionName,nEpistemicUCs,nAleatoricUCs,Dependencies)
             objSysC.Name=SystemName;
             objSysC.FunctionName=FunctionName;
             objSysC.CallFunction='';
@@ -40,6 +41,9 @@ classdef SystemConfig_Main
             objSysC.ResultProperties.nResult=1;
             objSysC.ResultProperties.Names={'Result'};
             objSysC.ResultProperties.Types={'double'};
+            objSysC.ResultProperties.Units={'defaultUnit'};
+            objSysC.ResultProperties.Descriptions={'DefaultDescription'};
+            objSysC.Dependencies=Dependencies;
             for iEpistemicUC=1:objSysC.UCParameters.nEpistemicUCs
             objSysC.UCParameters.EpistemicUCs(iEpistemicUC).Name=['EpistemicDefaultName',num2str(iEpistemicUC)];
             objSysC.UCParameters.EpistemicUCs(iEpistemicUC).Type='Epistemic';

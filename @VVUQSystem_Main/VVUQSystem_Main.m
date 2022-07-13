@@ -31,8 +31,8 @@ classdef VVUQSystem_Main
     end
    
     methods     
-        function objSys=VVUQSystem_Main(SystemName,FunctionName,nEpistemicUCs,nAleatoricUCs)
-            objSys.SystemConf=SystemConfig_Main(SystemName,FunctionName,nEpistemicUCs,nAleatoricUCs);
+        function objSys=VVUQSystem_Main(SystemName,FunctionName,nEpistemicUCs,nAleatoricUCs,Dependencies)
+            objSys.SystemConf=SystemConfig_Main(SystemName,FunctionName,nEpistemicUCs,nAleatoricUCs,Dependencies);
             objSys.InputPropagationUC=InputPropagationUC_Main(objSys.SystemConf,20,1000);
             objSys.ModelFormUC=ModelFormUC_Main;
             objSys.NumericUC=NumericUC_Main(objSys.SystemConf);  
@@ -46,11 +46,7 @@ classdef VVUQSystem_Main
             objSys.Color.DarkGrey=[127 127 127]/255;
             objSys.Color.LightGrey=[242 242 242]/255;
         end
-        PlotHandle=Plot_SystemVVUQResults(obj,iResult,resolution);
-        PlotHandle = Plot_SystemVVUQResultsExport_AVM(obj,iResult,resolution,width,height,margin);
-        PlotHandle =Plot_SystemVVUQResultsExport_Calculated_Confidence(obj,iResult,resolution,xlimwidth,width,height,margin);
-        PlotHandle =Plot_SystemVVUQResultsExport_Calculated_Measurement_Confidence(obj,iResult,resolution,xlimwidth,width,height,margin);
-        PlotHandle =Plot_SystemVVUQResultsExport_Predicted_Confidence(obj,iResult,resolution,xlimwidth,width,height,margin);
+        PlotHandle =Plot_VVUQSResult(objVVUQS,iResult,FigureHandle, PlotContent,ResolutionDecrease,FontSize,LineWidth,XLims,Width,Height,Margin);
     end   
 end
 

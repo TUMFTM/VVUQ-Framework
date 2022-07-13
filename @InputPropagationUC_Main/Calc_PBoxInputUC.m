@@ -69,7 +69,13 @@ function CDFsofRow=Create_CDFsFromResultRow(AllResults)
     end
 
     for iCDFsofTs=1:size(AllTsData,1)
-        [f,x] = ecdf(AllTsData(iCDFsofTs,:));
+        iTsData=AllTsData(iCDFsofTs,:);  
+        iUniqueTsData=Make_Unique(iTsData);
+         [f,x] = ecdf(iUniqueTsData);
+         if length(iUniqueTsData)~=length(x)-1
+             x=interp1(f,x,(0:1/(length(iTsData)):1)');
+             f=(0:1/(length(iTsData)):1)';
+         end
         CDFsofRow{iCDFsofTs,1}=[x,f];
     end
 end
@@ -110,3 +116,16 @@ function PBox=Calc_PBoxfromCDFs(InCDFs,AccuaracyFactor)
     PBox.minCDF=[InterpolatedMin,InterpolationVector];
 end
 
+function UniqueData=Make_Unique(Vector)
+TargetSize=length(Vector);
+[~,ia,~] = unique(Vector);
+ActualSize=length(ia);
+while ActualSize~=TargetSize
+        Same = rand(size(Vector)).*Vector*1e-3;
+        Same(ia) = 0;        
+        Vector=Vector+Same;
+        [~,ia,~] = unique(Vector);
+        ActualSize=length(ia);
+end
+UniqueData=Vector;
+end

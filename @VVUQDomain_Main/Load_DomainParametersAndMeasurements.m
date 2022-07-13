@@ -41,27 +41,50 @@ for iVariableName=VariableNames
     end
 end
 
-ResultProperty.nResult=1;
-ResultProperty.Names={'Result'};
-ResultProperty.Types={'double'};
-ResultProperty.Units={'Wh'} ;
-objVVUQVD.UC_LearningDoE.ResultProperty(:)={ResultProperty};
+try
+    iLearning=1;
+    for iTestConfig=TestConfigs'
+        Fieldnames = fieldnames(MeasurementTable.ResultProperty{iTestConfig});      
+        for iFieldnames=Fieldnames'
+            objVVUQVD.UC_LearningDoE.ResultProperty{iLearning}.(iFieldnames{1})=MeasurementTable.ResultProperty{iTestConfig}.(iFieldnames{1});
+        end
+        iLearning=iLearning+1;
+    end
+catch
+    disp('Annotaion: No result properties loaded from Measurementtable, because no column ResultProperty is available. Default result properties will be used.')
+end
+
+
 
 
 Config_Info.ID='-';
 Config_Info.Explaination='WLTC on roller bench';
+Config_Info.SampleTime=0.01;
+Config_Info.StopTime=1;
 objVVUQVD.UC_LearningDoE.Config_Info(:)={Config_Info};
 
-objVVUQVD.UC_LearningDoE.Properties.VariableUnits{nParameters+4}='Wh';
 
-nTestSets=size(Tests,1); %load cycles and info logfilenames
+objVVUQVD.UC_LearningDoE.Properties.VariableUnits{nParameters+4}=MeasurementTable.Properties.VariableUnits{strcmp(MeasurementTable.Properties.VariableNames,'Measurement')};
+
+nTestSets=size(Tests,1); %load cycles (if existing), info logfilenames, Measurements and sample and stoptime
 for iTestSet=1:nTestSets
-    objVVUQVD.UC_LearningDoE.cycle{iTestSet}.Data={MeasurementTable.Measurement(Tests(iTestSet,:)).VehSpeed};
-    objVVUQVD.UC_LearningDoE.Config_Info{iTestSet}.ID=MeasurementTable.LogFileName(Tests(iTestSet,:));
-    iLearningMeasurement=1;
+    try%load cycles (if existing)
+        objVVUQVD.UC_LearningDoE.cycle{iTestSet}.Data={MeasurementTable.MeasurementRecordedSignals(Tests(iTestSet,:)).VehSpeed};
+    catch
+       % disp('Annotaion: no cycles Loaded')
+    end
+    try
+        objVVUQVD.UC_LearningDoE.Config_Info{iTestSet}.SampleTime=MeasurementTable.SampleTime(Tests(iTestSet,1));
+        objVVUQVD.UC_LearningDoE.Config_Info{iTestSet}.StopTime=MeasurementTable.StopTime(Tests(iTestSet,1)); 
+    catch
+    end  
+    objVVUQVD.UC_LearningDoE.Config_Info{iTestSet}.ID=MeasurementTable.LogFileName(Tests(iTestSet,:)); %  Load Info Logfilenames   
+    array(size(MeasurementTable.Measurement{Tests(iTestSet,1)})) = struct('Value',[]);
+    objVVUQVD.UC_LearningDoE.Measurement{iTestSet}=array;
     for iIndividTest=Tests(iTestSet,:)
-    objVVUQVD.UC_LearningDoE.Measurement{iTestSet}(1,iLearningMeasurement)=MeasurementTable.Measurement(iIndividTest).Consuption.Data(end);
-    iLearningMeasurement=iLearningMeasurement+1;
+        for  ifields=1:1:length(MeasurementTable.Measurement{iIndividTest})    
+            objVVUQVD.UC_LearningDoE.Measurement{iTestSet}(ifields).Value=[objVVUQVD.UC_LearningDoE.Measurement{iTestSet}(ifields).Value,MeasurementTable.Measurement{iIndividTest}(ifields).Value];
+        end
     end
 end
 

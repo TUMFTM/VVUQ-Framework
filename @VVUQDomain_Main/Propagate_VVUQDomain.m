@@ -25,6 +25,15 @@ end
 % Execute Montecarlo Simulation
 for iUCLDoEConfig=1:objVVUQVD.nUCLDoEConfigs
     objVVUQVD.UC_LearningDoE.VVUQS{iUCLDoEConfig}.InputPropagationUC = ExecuteDoE( objVVUQVD.UC_LearningDoE.VVUQS{iUCLDoEConfig}.InputPropagationUC, objVVUQVD.UC_LearningDoE.VVUQS{iUCLDoEConfig}.SystemConf);
+    
+    stack=dbstack; %Save Rresult for debugging
+    [path,~]=fileparts(which(stack(end).file)); %calling function upper level
+    clear stack
+    filepath=[path,'/Results_VVUQ'];
+    [~,~]=mkdir (filepath);
+    filename = [filepath,'/InterimResult'];
+    save(filename,'objVVUQVD');
+    
     objVVUQVD.UC_LearningDoE.VVUQS{iUCLDoEConfig}.InputPropagationUC = Calc_PBoxInputUC( objVVUQVD.UC_LearningDoE.VVUQS{iUCLDoEConfig}.InputPropagationUC);
     
     % Execute Numerical Uncertainty Estimation
